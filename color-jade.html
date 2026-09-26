@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Color Jade Productions</title>
+  <meta name="description" content="The Color Jade Productions is Jade's production company: video, photo, audio, events and full campaigns, plus an upcoming sleep story series.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..800&family=Jost:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="theme-jade">
+  <a class="skip" href="#main">Skip to content</a>
+  <header id="site-header"></header>
+
+  <main id="main">
+    <!-- TODO: confirm the production company's services and add photos or a reel -->
+    <section class="page-head purple" aria-labelledby="cjp-title">
+      <div class="wrap">
+        <h1 id="cjp-title">The Color Jade Productions</h1>
+        <p class="lead">My production company. It's where ideas stop being ideas and become things you can watch, hear, post and share.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="make-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="make-title">What we produce</h2>
+          <p>One team, from the first idea to the final file. You bring the goal and we handle the rest.</p>
+        </div>
+        <div class="offer-grid">
+          <div class="offer"><h3>Video and photo</h3><p>Brand shoots, promos, performance content and behind-the-scenes, directed with a story in mind.</p></div>
+          <div class="offer"><h3>Podcast and audio</h3><p>Concept, scripting, recording and polish, including our own sleep story series.</p></div>
+          <div class="offer"><h3>Events and performances</h3><p>Creative for shows, dance lines and live moments, captured so they hit just as hard online.</p></div>
+          <div class="offer"><h3>Full campaigns</h3><p>Concept, copy, production and rollout plan, all under one roof and one vision.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" aria-labelledby="flow-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="flow-title">How a production comes together</h2>
+          <p>Every project moves through the same five stages. Choose one to see what happens.</p>
+        </div>
+        <ol class="timeline" id="timeline">
+          <li><button type="button" aria-pressed="true" data-say="Spark: we talk through the goal, the audience and the feeling you want people left with."><span class="knot">1</span><span class="t-name">Spark</span></button></li>
+          <li><button type="button" aria-pressed="false" data-say="Concept: I build the idea, the mood board and the plan, and we agree on it together."><span class="knot">2</span><span class="t-name">Concept</span></button></li>
+          <li><button type="button" aria-pressed="false" data-say="Shoot: lights, camera, direction. Talent, location and every detail handled on the day."><span class="knot">3</span><span class="t-name">Shoot</span></button></li>
+          <li><button type="button" aria-pressed="false" data-say="Edit: the story comes together in the cut, the mix and the final polish."><span class="knot">4</span><span class="t-name">Edit</span></button></li>
+          <li><button type="button" aria-pressed="false" data-say="Release: finished files, ready for every platform, plus a plan for putting them out into the world."><span class="knot">5</span><span class="t-name">Release</span></button></li>
+        </ol>
+        <p class="timeline-copy" id="timeline-copy" aria-live="polite">Spark: we talk through the goal, the audience and the feeling you want people left with.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="why-title">
+      <div class="wrap split">
+        <div data-fan style="max-width:440px"></div>
+        <div>
+          <h2 id="why-title">Why <span class="ital">The Color Jade?</span></h2>
+          <p class="lead">Jade is a stone people keep for luck, balance and growth. It's also my name. The company carries both: work that feels personal, and a promise to leave every project better than we found it.</p>
+          <p>When you work with The Color Jade Productions, you're working with me. I'm the writer, the director and the producer, and I care about your project like it's mine.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section paper" aria-labelledby="sleep-title">
+      <div class="wrap">
+        <div class="sleep">
+          <div>
+            <span class="tag">In development</span>
+            <h2 id="sleep-title">Sleep stories, <span class="ital">for grown-ups.</span></h2>
+            <p>A new audio series of original bedtime stories. Slow words, a soft voice and nowhere to be. The name is coming soon.</p>
+            <form class="notify" id="notify">
+              <label class="visually-hidden" for="notify-email">Your email</label>
+              <input type="email" id="notify-email" name="email" placeholder="you@example.com" required>
+              <button class="btn btn-peacock" type="submit">Tell me when it's out</button>
+            </form>
+            <p class="notify-msg" id="notify-msg" hidden>Your email app should open with a note ready to send. Sweet dreams.</p>
+          </div>
+          <div class="sleep-player">
+            <button class="breath" id="breath" type="button" aria-pressed="false"><span>Press to begin</span></button>
+            <div class="story-lines" id="story-lines" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section peacock-band cta" aria-labelledby="cjp-cta">
+      <div class="wrap">
+        <h2 id="cjp-cta">Let's produce <span class="ital">something.</span></h2>
+        <p>Tell me what you want to make and when you need it.</p>
+        <a class="btn btn-black" href="contact.html?service=production">Start a production</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

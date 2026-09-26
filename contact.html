@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Let's talk | Jade</title>
+  <meta name="description" content="Start a project with Jade.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..800&family=Jost:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header id="site-header"></header>
+
+  <main id="main">
+    <section class="page-head" aria-labelledby="contact-title">
+      <div class="wrap">
+        <h1 id="contact-title">Let's make <span class="ital">something.</span></h1>
+        <p class="lead">Tell me a little about you and what you're dreaming up. I read every message myself.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap contact-grid">
+        <aside class="contact-aside">
+          <h2>What happens next</h2>
+          <p>I'll reply within a couple of business days to set up a free first chat. No pressure and no jargon, just a real conversation about what you need.</p>
+          <p>Not sure which service fits? Leave them all unchecked and tell me the goal. Figuring that out is part of my job.</p>
+          <!-- TODO: add Jade's social links and direct email here -->
+        </aside>
+        <form class="starter" id="starter" novalidate>
+          <div class="two-up">
+            <div><label class="lbl" for="name">Your name</label><input type="text" id="name" name="name" autocomplete="name" required></div>
+            <div><label class="lbl" for="email">Your email</label><input type="email" id="email" name="email" autocomplete="email" required></div>
+          </div>
+          <div><label class="lbl" for="org">Business or project name (optional)</label><input type="text" id="org" name="org"></div>
+          <fieldset>
+            <legend>What are you interested in?</legend>
+            <div class="chip-set" id="service-chips"></div>
+          </fieldset>
+          <div>
+            <label class="lbl" for="timeline-select">When do you need it?</label>
+            <select id="timeline-select" name="timeline">
+              <option>As soon as possible</option>
+              <option>In the next month</option>
+              <option>In the next 3 months</option>
+              <option>Just exploring for now</option>
+            </select>
+          </div>
+          <div><label class="lbl" for="details">Tell me about it</label><textarea id="details" name="details" placeholder="What are you making, who is it for, and what would make it a win?" required></textarea></div>
+          <p class="form-error" id="form-error" hidden role="alert"></p>
+          <div><button class="btn btn-black" type="submit">Send to Jade</button></div>
+          <p class="form-msg" id="form-msg" hidden role="status">Your email app should open with everything filled in. Hit send and Jade will be in touch.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
