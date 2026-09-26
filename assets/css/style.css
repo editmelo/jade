@@ -710,16 +710,6 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--peacock); o
 @keyframes halo { 0%, 62%, 100% { opacity: .5; } 74% { opacity: 1; } }
 
 /* ---------- scroll like a film ---------- */
-.hero-scroll { position: relative; height: 230vh; }
-.hero-scroll .hero { position: sticky; top: var(--header-h); height: calc(100svh - var(--header-h)); }
-.hero-scroll .hero-grid { min-height: 100%; }
-.hero-copy { will-change: opacity, transform; }
-.hero-fade { position: absolute; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none; }
-@media (max-width: 900px) {
-  .hero-scroll { height: auto; }
-  .hero-scroll .hero { position: relative; top: 0; height: auto; }
-}
-
 /* sections fade up from black, like a cut */
 .js .scene > .wrap { opacity: 0; }
 .js .scene.in > .wrap { animation: cut 1.5s var(--ease) both; }
@@ -732,8 +722,6 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--peacock); o
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; transition-delay: 0s !important; }
   html { scroll-behavior: auto; }
-  .hero-scroll { height: auto; }
-  .hero-scroll .hero { position: relative; top: 0; height: auto; }
   .grain { display: none; }
   .js .scene > .wrap { opacity: 1; }
 }

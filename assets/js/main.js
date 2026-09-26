@@ -113,7 +113,7 @@ function peacockArt({ services = [], interactive = false, labels = false, bird =
       const focusFeather = r === 0 && i === (row.n - 1) / 2;
       const opacity = svc || focusFeather ? 1 : services.length ? row.o : Math.max(row.o, 0.8);
       const attrs = svc && interactive ? ` role="button" tabindex="0" data-id="${svc.id}" aria-label="${svc.name}"` : "";
-      // the center feather of the back row is where the camera pushes in; the rest of that row sits out of focus
+      // the center feather of the back row stays sharp and bright; the rest of that row sits out of focus
       const focus = focusFeather;
       const soft = r === 0 && !svc && !focus ? ` filter="url(#dof${id})"` : "";
       feathers += `
@@ -822,70 +822,6 @@ function initFontTester() {
 }
 
 /* ---------- scroll like a film ---------- */
-// Desktop: the hero holds while scrolling pushes the camera into the center feather's eye.
-function initHeroZoom() {
-  const wrap = $("#hero-scroll");
-  const stage = $("#stage");
-  if (!wrap || !stage || reduceMotion) return;
-  const hero = $(".hero", wrap);
-  const copy = $(".hero-copy", wrap);
-  const fade = $(".hero-fade", wrap);
-  let motes = null;
-  const small = window.matchMedia("(max-width: 900px)");
-  let eye = null;
-  let ticking = false;
-
-  // where the focus eye sits, relative to the hero, with no zoom applied
-  function measure() {
-    const svg = $("svg", stage);
-    svg.style.transform = "";
-    const pupil = $(".plume.focus .pupil", stage).getBoundingClientRect();
-    const box = svg.getBoundingClientRect();
-    const h = hero.getBoundingClientRect();
-    const x = pupil.left + pupil.width / 2;
-    const y = pupil.top + pupil.height / 2;
-    eye = { svg, dx: h.left + h.width / 2 - x, dy: h.top + h.height / 2 - y };
-    motes = $(".motes", svg);
-    svg.style.transformOrigin = `${x - box.left}px ${y - box.top}px`;
-    update();
-  }
-
-  function update() {
-    ticking = false;
-    if (!eye) return;
-    if (small.matches) {
-      eye.svg.style.transform = copy.style.opacity = copy.style.transform = fade.style.opacity = "";
-      return;
-    }
-    const total = wrap.offsetHeight - hero.offsetHeight;
-    const p = Math.min(1, Math.max(0, (hero.getBoundingClientRect().top - wrap.getBoundingClientRect().top) / total));
-    const ease = p * p * (3 - 2 * p);
-    eye.svg.style.transform = `translate(${fx(eye.dx * ease)}px, ${fx(eye.dy * ease)}px) scale(${fx(1 + 16 * Math.pow(p, 2.2))})`;
-    copy.style.opacity = Math.max(0, 1 - p * 3);
-    copy.style.transform = `translateY(${fx(-p * 80)}px)`;
-    fade.style.opacity = Math.min(1, Math.max(0, (p - 0.72) / 0.28));
-    if (motes) motes.style.opacity = Math.max(0, 1 - p * 4);
-  }
-
-  const onScroll = () => {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(update);
-    }
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", () => requestAnimationFrame(measure));
-  // measure once the tail has finished fanning open
-  const start = () => setTimeout(measure, 1900);
-  if (stage.classList.contains("open")) start();
-  else new MutationObserver((_, obs) => {
-    if (stage.classList.contains("open")) {
-      obs.disconnect();
-      start();
-    }
-  }).observe(stage, { attributes: true, attributeFilter: ["class"] });
-}
-
 // Every section after the first fades up from black, like a cut.
 function initScenes() {
   const scenes = $$("#main > section").slice(1);
@@ -918,6 +854,5 @@ initTimeline();
 initSleep();
 initForms();
 initFontTester();
-initHeroZoom();
 initScenes();
 document.body.insertAdjacentHTML("beforeend", '<div class="grain" aria-hidden="true"></div>');
