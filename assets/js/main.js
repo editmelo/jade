@@ -2,6 +2,7 @@
    Jade — site behavior. Content comes from data.js.
 =================================================================== */
 
+document.documentElement.classList.add("js");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canHover = window.matchMedia("(hover: hover)").matches;
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -109,11 +110,15 @@ function peacockArt({ services = [], interactive = false, labels = false, bird =
       const slot = r === 0 ? serviceSlots.indexOf(i) : -1;
       const svc = slot >= 0 ? services[slot] : null;
       const d = Math.abs(i - (row.n - 1) / 2) + r * 3;
-      const opacity = services.length ? (svc ? 1 : row.o) : Math.max(row.o, 0.8);
+      const focusFeather = r === 0 && i === (row.n - 1) / 2;
+      const opacity = svc || focusFeather ? 1 : services.length ? row.o : Math.max(row.o, 0.8);
       const attrs = svc && interactive ? ` role="button" tabindex="0" data-id="${svc.id}" aria-label="${svc.name}"` : "";
+      // the center feather of the back row is where the camera pushes in; the rest of that row sits out of focus
+      const focus = focusFeather;
+      const soft = r === 0 && !svc && !focus ? ` filter="url(#dof${id})"` : "";
       feathers += `
-        <g class="plume${svc ? " svc" : ""}"${attrs} style="--a:${fx(a)}deg; --d:${fx(d)}; --o:${opacity}">
-          <g transform="translate(${CX} ${CY})">${featherMarkup(row.L, svc ? 1.15 : 1)}</g>
+        <g class="plume${svc ? " svc" : ""}${focus ? " focus" : ""}" style="--a:${fx(a)}deg; --d:${fx(d)}; --o:${opacity}"${attrs}>
+          <g transform="translate(${CX} ${CY})"${soft}>${featherMarkup(row.L, svc ? 1.15 : 1)}</g>
         </g>`;
       if (svc && labels) {
         const [lx, ly] = polar(row.L + 26, a);
@@ -121,10 +126,28 @@ function peacockArt({ services = [], interactive = false, labels = false, bird =
       }
     }
   });
+  // floating dust caught in the light (hero only)
+  const motes = interactive
+    ? Array.from({ length: 28 }, () => {
+        const x = 120 + Math.random() * 560;
+        const y = 80 + Math.random() * 380;
+        return `<circle class="mote" cx="${fx(x)}" cy="${fx(y)}" r="${fx(0.8 + Math.random() * 1.8)}" style="--t:${fx(9 + Math.random() * 10)}s; --w:${fx(-Math.random() * 12)}s"/>`;
+      }).join("")
+    : "";
   return `
-    <defs><radialGradient id="glow${id}"><stop class="g1" offset="0"/><stop class="g2" offset="1"/></radialGradient></defs>
+    <defs>
+      <radialGradient id="glow${id}"><stop class="g1" offset="0"/><stop class="g2" offset="1"/></radialGradient>
+      <radialGradient id="hazeA${id}"><stop class="ha1" offset="0"/><stop class="ha2" offset="1"/></radialGradient>
+      <radialGradient id="hazeB${id}"><stop class="hb1" offset="0"/><stop class="hb2" offset="1"/></radialGradient>
+      <filter id="dof${id}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.8"/></filter>
+    </defs>
     <circle class="glow" cx="400" cy="300" r="330" fill="url(#glow${id})"/>
+    <g class="haze">
+      <circle class="haze-a" cx="290" cy="240" r="230" fill="url(#hazeA${id})"/>
+      <circle class="haze-b" cx="540" cy="330" r="250" fill="url(#hazeB${id})"/>
+    </g>
     <g class="train">${feathers}</g>
+    <g class="motes">${motes}</g>
     ${labelMarkup}
     ${bird ? peacockBody() : ""}`;
 }
@@ -146,12 +169,6 @@ function logoMark() {
     </svg>`;
 }
 
-function eyeIcon() {
-  return `<svg class="s-icon" viewBox="-40 -64 80 116" aria-hidden="true">
-    <path d="M0,-58 C30,-40 34,20 0,46 C-34,20 -30,-40 0,-58 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
-    <circle r="22" class="icon-ring" stroke-width="3"/><circle r="11" class="icon-iris"/><circle r="4.5" fill="#000"/>
-  </svg>`;
-}
 
 /* ---------- shared header + footer ---------- */
 const NAV = [
@@ -433,7 +450,7 @@ function initServiceGrid() {
     (s) => `
     <li>
       <button class="service-card" type="button" data-tone="${s.tone}" data-open="${s.id}" aria-haspopup="dialog">
-        ${eyeIcon()}
+        <svg class="card-feather" viewBox="-75 -275 150 285" aria-hidden="true">${featherMarkup(260, 1.2)}</svg>
         <span class="s-name">${s.name}</span>
         <span class="s-line">${s.line}</span>
         <span class="s-more">See the details</span>
@@ -804,6 +821,87 @@ function initFontTester() {
   ).join("");
 }
 
+/* ---------- scroll like a film ---------- */
+// Desktop: the hero holds while scrolling pushes the camera into the center feather's eye.
+function initHeroZoom() {
+  const wrap = $("#hero-scroll");
+  const stage = $("#stage");
+  if (!wrap || !stage || reduceMotion) return;
+  const hero = $(".hero", wrap);
+  const copy = $(".hero-copy", wrap);
+  const fade = $(".hero-fade", wrap);
+  let motes = null;
+  const small = window.matchMedia("(max-width: 900px)");
+  let eye = null;
+  let ticking = false;
+
+  // where the focus eye sits, relative to the hero, with no zoom applied
+  function measure() {
+    const svg = $("svg", stage);
+    svg.style.transform = "";
+    const pupil = $(".plume.focus .pupil", stage).getBoundingClientRect();
+    const box = svg.getBoundingClientRect();
+    const h = hero.getBoundingClientRect();
+    const x = pupil.left + pupil.width / 2;
+    const y = pupil.top + pupil.height / 2;
+    eye = { svg, dx: h.left + h.width / 2 - x, dy: h.top + h.height / 2 - y };
+    motes = $(".motes", svg);
+    svg.style.transformOrigin = `${x - box.left}px ${y - box.top}px`;
+    update();
+  }
+
+  function update() {
+    ticking = false;
+    if (!eye) return;
+    if (small.matches) {
+      eye.svg.style.transform = copy.style.opacity = copy.style.transform = fade.style.opacity = "";
+      return;
+    }
+    const total = wrap.offsetHeight - hero.offsetHeight;
+    const p = Math.min(1, Math.max(0, (hero.getBoundingClientRect().top - wrap.getBoundingClientRect().top) / total));
+    const ease = p * p * (3 - 2 * p);
+    eye.svg.style.transform = `translate(${fx(eye.dx * ease)}px, ${fx(eye.dy * ease)}px) scale(${fx(1 + 16 * Math.pow(p, 2.2))})`;
+    copy.style.opacity = Math.max(0, 1 - p * 3);
+    copy.style.transform = `translateY(${fx(-p * 80)}px)`;
+    fade.style.opacity = Math.min(1, Math.max(0, (p - 0.72) / 0.28));
+    if (motes) motes.style.opacity = Math.max(0, 1 - p * 4);
+  }
+
+  const onScroll = () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", () => requestAnimationFrame(measure));
+  // measure once the tail has finished fanning open
+  const start = () => setTimeout(measure, 1900);
+  if (stage.classList.contains("open")) start();
+  else new MutationObserver((_, obs) => {
+    if (stage.classList.contains("open")) {
+      obs.disconnect();
+      start();
+    }
+  }).observe(stage, { attributes: true, attributeFilter: ["class"] });
+}
+
+// Every section after the first fades up from black, like a cut.
+function initScenes() {
+  const scenes = $$("#main > section").slice(1);
+  if (reduceMotion || !("IntersectionObserver" in window)) return;
+  scenes.forEach((s) => s.classList.add("scene"));
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add("in");
+      io.unobserve(en.target);
+    }),
+    { threshold: 0.12 }
+  );
+  scenes.forEach((s) => io.observe(s));
+}
+
 /* ---------- boot ---------- */
 applyFont();
 renderChrome();
@@ -820,3 +918,6 @@ initTimeline();
 initSleep();
 initForms();
 initFontTester();
+initHeroZoom();
+initScenes();
+document.body.insertAdjacentHTML("beforeend", '<div class="grain" aria-hidden="true"></div>');
